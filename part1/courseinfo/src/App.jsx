@@ -2,20 +2,16 @@ const Header = ({ course }) => {
   return <h1>{course}</h1>;
 };
 
+const Part = ({part,exercise}) => {
+  return <p>{part} - {exercise}</p>;
+};
+
 const Content = ({ parts, exercises }) => {
-  const { p1, p2, p3 } = parts;
-  const { e1, e2, e3 } = exercises;
   return (
     <div>
-      <p>
-        {p1} - {e1}
-      </p>
-      <p>
-        {p2} - {e2}
-      </p>
-      <p>
-        {p3} - {e3}
-      </p>
+      <Part part={parts[0]} exercise={exercises[0]} />
+      <Part part={parts[1]} exercise={exercises[1]} />
+      <Part part={parts[2]} exercise={exercises[2]} />
     </div>
   );
 };
@@ -40,8 +36,11 @@ const App = () => {
     <div>
       <Header course={course} />
       <Content
-        parts={{ p1: part1, p2: part2, p3: part3 }}
-        exercises={{ e1: exercises1, e2: exercises2, e3: exercises3 }}
+        // pass as array not object
+        // parts={{ p1: part1, p2: part2, p3: part3 }}
+        // exercises={{ e1: exercises1, e2: exercises2, e3: exercises3 }}
+        parts={[part1, part2, part3]}
+        exercises={[exercises1, exercises2, exercises3]}
       />
       <Total exercises={{ e1: exercises1, e2: exercises2, e3: exercises3 }} />
     </div>
