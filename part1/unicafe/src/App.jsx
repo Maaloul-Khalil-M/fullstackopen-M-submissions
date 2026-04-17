@@ -1,11 +1,15 @@
 import { useState } from "react";
+
+//already implemented
 const Button = (props) => <button onClick={props.onClick}>{props.text}</button>;
 
-const Stat = ({ text, value }) => {
+//rename Stat to StatisticLine each is tr
+const StatisticLine = ({ text, value }) => {
   return (
-    <p>
-      {text} {value}
-    </p>
+    <tr>
+      <td>{text}</td>
+      <td>{value}</td>
+    </tr>
   );
 };
 
@@ -26,13 +30,13 @@ const MoreStat = ({ good, neutral, bad }) => {
     if (total === 0) return 0;
     return (good / total) * 100;
   };
-
+  // we need a fragment
   return (
-    <div>
-      <Stat text="all" value={calcTotal()} />
-      <Stat text="average" value={calcAverage()} />
-      <Stat text="positive" value={calcPercPos() + " %"} />
-    </div>
+    <>
+      <StatisticLine text="all" value={calcTotal()} />
+      <StatisticLine text="average" value={calcAverage()} />
+      <StatisticLine text="positive" value={calcPercPos() + " %"} />
+    </>
   );
 };
 
@@ -43,12 +47,12 @@ const Statistics = (props) => {
 
   if (!(good === 0 && neutral === 0 && bad === 0)) {
     feedback = (
-      <>
-        <Stat text="good" value={good} />
-        <Stat text="neutral" value={neutral} />
-        <Stat text="bad" value={bad} />
+      <tbody>
+        <StatisticLine text="good" value={good} />
+        <StatisticLine text="neutral" value={neutral} />
+        <StatisticLine text="bad" value={bad} />
         <MoreStat {...props} />
-      </>
+      </tbody>
     );
   }
   return (
