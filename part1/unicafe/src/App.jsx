@@ -10,7 +10,6 @@ const Stat = ({ text, value }) => {
 };
 
 const MoreStat = ({ good, neutral, bad }) => {
-
   const calcTotal = () => {
     return good + neutral + bad;
   };
@@ -39,13 +38,23 @@ const MoreStat = ({ good, neutral, bad }) => {
 
 const Statistics = (props) => {
   const { good, neutral, bad } = props;
+
+  let feedback = <p>No feedback given</p>;
+
+  if (!(good === 0 && neutral === 0 && bad === 0)) {
+    feedback = (
+      <>
+        <Stat text="good" value={good} />
+        <Stat text="neutral" value={neutral} />
+        <Stat text="bad" value={bad} />
+        <MoreStat {...props} />
+      </>
+    );
+  }
   return (
     <div>
       <h2>statistics</h2>
-      <Stat text="good" value={good} />
-      <Stat text="neutral" value={neutral} />
-      <Stat text="bad" value={bad} />
-      <MoreStat {...props} />
+      {feedback}
     </div>
   );
 };
