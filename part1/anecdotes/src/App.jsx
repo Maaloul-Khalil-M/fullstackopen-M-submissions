@@ -1,5 +1,28 @@
 import { useState } from "react";
 
+//refactor because similar structure
+const AnecdoteDisplay = ({ title, anecdote, votes }) => {
+  return (
+    <div>
+      <h1>{title}</h1>
+      <div>{anecdote}</div>
+      <div>has {votes} votes</div>
+    </div>
+  );
+};
+
+const Most = ({ votes, anecdotes }) => {
+  const max = Math.max(...votes);
+  const maxIndex = votes.indexOf(max);
+  return (
+    <AnecdoteDisplay
+      title="anecdotes with most votes"
+      anecdote={anecdotes[maxIndex]}
+      votes={max}
+    />
+  );
+};
+
 const App = () => {
   const anecdotes = [
     "If it hurts, do it more often.",
@@ -19,6 +42,7 @@ const App = () => {
     return Math.floor(Math.random() * len);
   };
 
+  //spread op doing it's job
   const handleIncrementVote = (index) => {
     setVotes([
       ...votes.slice(0, index),
@@ -29,19 +53,16 @@ const App = () => {
 
   return (
     <div>
-      <div>{anecdotes[selected]}</div>
-      <div>has {votes[selected]} votes</div>
-      <br />
+      <AnecdoteDisplay
+        title="anecdotes of the day"
+        anecdote={anecdotes[selected]}
+        votes={votes[selected]}
+      />
       <button onClick={() => handleIncrementVote(selected)}>vote</button>
-      <button
-        onClick={() => {
-          let rand = getRandomIndex();
-          console.log(rand);
-          setSelected(rand);
-        }}
-      >
-        next anecdotes
+      <button onClick={() => setSelected(getRandomIndex())}>
+        next anecdote
       </button>
+      <Most votes={votes} anecdotes={anecdotes} />
     </div>
   );
 };
