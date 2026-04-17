@@ -2,8 +2,12 @@ const Header = ({ course }) => {
   return <h1>{course}</h1>;
 };
 
-const Part = ({part,exercise}) => {
-  return <p>{part} - {exercise}</p>;
+const Part = ({ part, exercise }) => {
+  return (
+    <p>
+      {part} {exercise}
+    </p>
+  );
 };
 
 const Content = ({ parts, exercises }) => {
@@ -17,46 +21,38 @@ const Content = ({ parts, exercises }) => {
 };
 
 const Total = ({ exercises }) => {
-  const { e1, e2, e3 } = exercises;
-  const sum = e1 + e2 + e3;
-
+  // mdn: reduce to calculate sum
+  const sum = exercises.reduce(
+    (accumulator, currentValue) => accumulator + currentValue,
+    0,
+  );
   return <p>Number of exercises {sum}</p>;
 };
 
 const App = () => {
   const course = "Half Stack application development";
-  const part1 = "Fundamentals of React";
-  const exercises1 = 10;
-  const part2 = "Using props to pass data";
-  const exercises2 = 7;
-  const part3 = "State of a component";
-  const exercises3 = 14;
+  const part1 = {
+    name: "Fundamentals of React",
+    exercises: 10,
+  };
+  const part2 = {
+    name: "Using props to pass data",
+    exercises: 7,
+  };
+  const part3 = {
+    name: "State of a component",
+    exercises: 14,
+  };
 
   return (
     <div>
       <Header course={course} />
       <Content
-        // pass as array not object
-        // parts={{ p1: part1, p2: part2, p3: part3 }}
-        // exercises={{ e1: exercises1, e2: exercises2, e3: exercises3 }}
-        parts={[part1, part2, part3]}
-        exercises={[exercises1, exercises2, exercises3]}
+        parts={[part1.name, part2.name, part3.name]}
+        exercises={[part1.exercises, part2.exercises, part3.exercises]}
       />
-      <Total exercises={{ e1: exercises1, e2: exercises2, e3: exercises3 }} />
+      <Total exercises={[part1.exercises, part2.exercises, part3.exercises]} />
     </div>
-    // <div>
-    //   <h1>{course}</h1>
-    //   <p>
-    //     {part1} {exercises1}
-    //   </p>
-    //   <p>
-    //     {part2} {exercises2}
-    //   </p>
-    //   <p>
-    //     {part3} {exercises3}
-    //   </p>
-    //   <p>Number of exercises {exercises1 + exercises2 + exercises3}</p>
-    // </div>
   );
 };
 
