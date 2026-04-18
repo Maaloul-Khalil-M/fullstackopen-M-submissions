@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { nanoid } from "nanoid";
-import axios from "axios";
+import fetchLogic from "./services/fetchLogic";
 import Persons from "./components/Persons";
 import PersonForm from "./components/PersonForm";
 import Filter from "./components/Filter";
@@ -12,13 +11,10 @@ const App = () => {
   const [newNumber, setNewNumber] = useState("");
   const [filter, setFilter] = useState("");
 
-  //fetch using axios
   useEffect(() => {
-    const eventHandler = (response) => {
-      setPersons(response.data);
-    };
-    const promise = axios.get("http://localhost:3001/persons");
-    promise.then(eventHandler);
+    fetchLogic.getAll().then((initialPersons) => {
+      setPersons(initialPersons);
+    });
   }, []);
 
   //addPerson+axios, seperate validate logic
@@ -36,24 +32,17 @@ const App = () => {
     event.preventDefault();
     // generate id by server
     const personToAdd = { name: newName, number: newNumber };
-
-    if (validatePerson(personToAdd, persons)) {
+    const errorMessage = validatePerson(personToAdd, persons);
+    if (errorMessage) {
       alert(errorMessage);
       return;
     }
 
-    // setPersons((prevPersons) => [...prevPersons, personToAdd]);
-    axios
-      .post("http://localhost:3001/persons", personToAdd)
-      .then((response) => {
-        setPersons((prevPersons) => [...prevPersons, response.data]);
-        setNewName("");
-        setNewNumber("");
-      })
-      .catch((error) => {
-        console.error("Failed to add person:", error);
-        alert(`An error occurred while adding ${newName}`);
-      });
+    fetchLogic.create(personToAdd).then((returnedPerson) => {
+      setPersons((prevPersons) => [...prevPersons, returnedPerson]);
+      setNewName("");
+      setNewNumber("");
+    });
   };
 
   //logic

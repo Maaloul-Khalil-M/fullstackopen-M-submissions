@@ -24,6 +24,11 @@
       "name": "test",
       "number": "00000000",
       "id": "GthgNHLFkS8"
+    },
+    {
+      "name": "testing",
+      "number": "21",
+      "id": "TLpn6Tdr6jo"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
