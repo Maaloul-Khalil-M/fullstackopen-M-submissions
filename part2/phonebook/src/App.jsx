@@ -11,34 +11,50 @@ const App = () => {
   const [newNumber, setNewNumber] = useState("");
   const [filter, setFilter] = useState("");
 
+  //starting logic
   useEffect(() => {
     fetchLogic.getAll().then((initialPersons) => {
       setPersons(initialPersons);
     });
   }, []);
 
-  //addPerson+axios, seperate validate logic
-  function validatePerson(person, currentPersons) {
-    if (verifyDupName(currentPersons, person)) {
-      return `${person.name} is already added to phonebook`;
-    }
-    if (verifyDupNumber(currentPersons, person)) {
-      return `${person.number} is already added to phonebook`;
-    }
-    return null;
-  }
+  //check for newItem with existing name
+  const getDupPerson = (arr, newItem) => {
+    const duplicate = arr.find(
+      (item) => item.name.toUpperCase() === newItem.name.toUpperCase(),
+    );
+    return duplicate;
+  };
 
+  //if found duplicate, confirm then modify (PUT)
+  const handleDuplicateConfirmation = (duplicatedPerson, personToAdd) => {
+    const isConfirmed = confirm(
+      `${duplicatedPerson.name} is already added to phonebook\nReplace the old number with the new one?`,
+    );
+    if (!isConfirmed) return;
+    fetchLogic
+      .modify(duplicatedPerson.id, personToAdd)
+      .then((returnedPerson) => {
+        setPersons((prevPersons) =>
+          prevPersons.map((p) =>
+            p.id === duplicatedPerson.id ? returnedPerson : p,
+          ),
+        );
+      });
+    setNewName("");
+    setNewNumber("");
+  };
+
+  //if found duplicate handleDuplicate
+  //else add with create
   const addPerson = (event) => {
     event.preventDefault();
-    // generate id by server
     const personToAdd = { name: newName, number: newNumber };
-
-    const errorMessage = validatePerson(personToAdd, persons);
-    if (errorMessage) {
-      alert(errorMessage);
+    const duplicatedPerson = getDupPerson(persons, personToAdd);
+    if (duplicatedPerson !== undefined) {
+      handleDuplicateConfirmation(duplicatedPerson, personToAdd);
       return;
     }
-
     fetchLogic.create(personToAdd).then((returnedPerson) => {
       setPersons((prevPersons) => [...prevPersons, returnedPerson]);
       setNewName("");
@@ -46,6 +62,7 @@ const App = () => {
     });
   };
 
+  //delete logic
   const deletePerson = (person) => {
     if (!confirm(`Delete ${person.name} ?`)) {
       return;
@@ -55,10 +72,11 @@ const App = () => {
       setPersons((prevPersons) =>
         prevPersons.filter((p) => p.id !== person.id),
       );
+      setFilter("");
     });
   };
 
-  //logic
+  //handlers
   const nameHandler = (event) => {
     setNewName(event.target.value);
   };
@@ -68,20 +86,9 @@ const App = () => {
   const filterHandler = (event) => {
     setFilter(event.target.value);
   };
-
-  const verifyDupName = (arr, newItem) => {
-    return arr.some(
-      (item) => item.name.toUpperCase() === newItem.name.toUpperCase(),
-    );
-  };
-  const verifyDupNumber = (arr, newItem) => {
-    return arr.some((item) => item.number === newItem.number);
-  };
-
-  // const filteredPersons = persons.filter((person) =>
-  //   person.name.toLowerCase().includes(filter.toLowerCase()),
-  // );
-  const filteredPersons = persons;
+  const filteredPersons = persons.filter((person) =>
+    person.name.toLowerCase().includes(filter.toLowerCase()),
+  );
 
   // passing state and logic to child
   return (
@@ -101,5 +108,4 @@ const App = () => {
     </div>
   );
 };
-
 export default App;
