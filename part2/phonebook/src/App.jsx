@@ -11,8 +11,20 @@ const App = () => {
 
   const addPerson = (event) => {
     event.preventDefault();
-    setPersons((prevPersons) => [...prevPersons, { name: newName }]);
-    setNewName("");
+    const nameToAdd = { name: newName };
+
+    if (verifyDupName(persons, nameToAdd)) {
+      alert(`${newName} is already added to phonebook`);
+    } else {
+      setPersons((prevPersons) => [...prevPersons, nameToAdd]);
+      setNewName("");
+    }
+  };
+
+  const verifyDupName = (arr, newItem) => {
+    return arr.some(
+      (item) => item.name.toUpperCase() === newItem.name.toUpperCase(),
+    );
   };
 
   return (
