@@ -1,13 +1,17 @@
 .notification {
+  text-align: center;
   position: fixed;
-  top: 0;
-  right: 0;
+  top: 1rem;
+  left: 50%;
   transform: translateX(-50%) translateY(-12px);
+  width: clamp(240px, 50vw, 480px);
+  box-sizing: border-box;
   color: forestgreen;
   padding: 1rem 0.875rem;
   border: 5px solid forestgreen;
   border-radius: 10px;
-  font-size: 1.5rem;
+  font-size: clamp(1rem, 2.5vw, 1.5rem);
+  word-break: break-word;
   opacity: 0;
   transition:
     opacity 0.35s ease,
@@ -22,4 +26,10 @@
 .notification.error {
   color: crimson;
   border-color: crimson;
+}
+
+@media (max-width: 480px) {
+  .notification {
+    width: calc(100vw - 2rem);
+  }
 }

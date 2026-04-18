@@ -44,8 +44,14 @@ const App = () => {
           ),
         );
         setFeedback((prevFeed) => ({
-          msg: `${newName} was successfully modified`,
+          msg: `${duplicatedPerson.name} was successfully modified`,
           isError: false,
+        }));
+      })
+      .catch((error) => {
+        setFeedback((prevFeed) => ({
+          msg: `Information of ${newName} has already been removed from server`,
+          isError: true,
         }));
       });
     setNewName("");
