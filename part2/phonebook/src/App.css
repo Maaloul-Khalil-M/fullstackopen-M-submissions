@@ -1,0 +1,25 @@
+.notification {
+  position: fixed;
+  top: 0;
+  right: 0;
+  transform: translateX(-50%) translateY(-12px);
+  color: forestgreen;
+  padding: 1rem 0.875rem;
+  border: 5px solid forestgreen;
+  border-radius: 10px;
+  font-size: 1.5rem;
+  opacity: 0;
+  transition:
+    opacity 0.35s ease,
+    transform 0.35s ease;
+}
+
+.notification.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.notification.error {
+  color: crimson;
+  border-color: crimson;
+}

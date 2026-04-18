@@ -1,8 +1,10 @@
-import { useState, useEffect } from "react";
 import fetchLogic from "./services/fetchLogic";
 import Persons from "./components/Persons";
 import PersonForm from "./components/PersonForm";
 import Filter from "./components/Filter";
+import Notification from "./components/Notification";
+import "./App.css";
+import { useState, useEffect } from "react";
 
 const App = () => {
   //states
@@ -10,6 +12,7 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [filter, setFilter] = useState("");
+  const [feedback, setFeedback] = useState({ msg: null, isError: false });
 
   //starting logic
   useEffect(() => {
@@ -40,6 +43,10 @@ const App = () => {
             p.id === duplicatedPerson.id ? returnedPerson : p,
           ),
         );
+        setFeedback((prevFeed) => ({
+          msg: `${newName} was successfully modified`,
+          isError: false,
+        }));
       });
     setNewName("");
     setNewNumber("");
@@ -57,6 +64,10 @@ const App = () => {
     }
     fetchLogic.create(personToAdd).then((returnedPerson) => {
       setPersons((prevPersons) => [...prevPersons, returnedPerson]);
+      setFeedback((prevFeed) => ({
+        msg: `${newName} was successfully added`,
+        isError: false,
+      }));
       setNewName("");
       setNewNumber("");
     });
@@ -72,6 +83,10 @@ const App = () => {
       setPersons((prevPersons) =>
         prevPersons.filter((p) => p.id !== person.id),
       );
+      setFeedback((prevFeed) => ({
+        msg: `${person.name} was successfully deleted`,
+        isError: false,
+      }));
       setFilter("");
     });
   };
@@ -94,6 +109,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification feedback={feedback} />
       <Filter value={filter} onChange={filterHandler} />
       <h2>add a new</h2>
       <PersonForm
