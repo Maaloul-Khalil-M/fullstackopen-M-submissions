@@ -32,6 +32,7 @@ const App = () => {
     event.preventDefault();
     // generate id by server
     const personToAdd = { name: newName, number: newNumber };
+
     const errorMessage = validatePerson(personToAdd, persons);
     if (errorMessage) {
       alert(errorMessage);
@@ -42,6 +43,18 @@ const App = () => {
       setPersons((prevPersons) => [...prevPersons, returnedPerson]);
       setNewName("");
       setNewNumber("");
+    });
+  };
+
+  const deletePerson = (person) => {
+    if (!confirm(`Delete ${person.name} ?`)) {
+      return;
+    }
+    fetchLogic.delete(person.id).then(() => {
+      //filter out the deleted person from the current list
+      setPersons((prevPersons) =>
+        prevPersons.filter((p) => p.id !== person.id),
+      );
     });
   };
 
@@ -65,9 +78,11 @@ const App = () => {
     return arr.some((item) => item.number === newItem.number);
   };
 
-  const filteredPersons = persons.filter((person) =>
-    person.name.toLowerCase().includes(filter.toLowerCase()),
-  );
+  // const filteredPersons = persons.filter((person) =>
+  //   person.name.toLowerCase().includes(filter.toLowerCase()),
+  // );
+  const filteredPersons = persons;
+
   // passing state and logic to child
   return (
     <div>
@@ -82,7 +97,7 @@ const App = () => {
         numberHandler={numberHandler}
       />
       <h2>Numbers</h2>
-      <Persons persons={filteredPersons} />
+      <Persons persons={filteredPersons} deletePerson={deletePerson} />
     </div>
   );
 };
