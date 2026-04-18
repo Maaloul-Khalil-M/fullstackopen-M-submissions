@@ -21,6 +21,41 @@ const App = () => {
     promise.then(eventHandler);
   }, []);
 
+  //addPerson+axios, seperate validate logic
+  function validatePerson(person, currentPersons) {
+    if (verifyDupName(currentPersons, person)) {
+      return `${person.name} is already added to phonebook`;
+    }
+    if (verifyDupNumber(currentPersons, person)) {
+      return `${person.number} is already added to phonebook`;
+    }
+    return null;
+  }
+
+  const addPerson = (event) => {
+    event.preventDefault();
+    // generate id by server
+    const personToAdd = { name: newName, number: newNumber };
+
+    if (validatePerson(personToAdd, persons)) {
+      alert(errorMessage);
+      return;
+    }
+
+    // setPersons((prevPersons) => [...prevPersons, personToAdd]);
+    axios
+      .post("http://localhost:3001/persons", personToAdd)
+      .then((response) => {
+        setPersons((prevPersons) => [...prevPersons, response.data]);
+        setNewName("");
+        setNewNumber("");
+      })
+      .catch((error) => {
+        console.error("Failed to add person:", error);
+        alert(`An error occurred while adding ${newName}`);
+      });
+  };
+
   //logic
   const nameHandler = (event) => {
     setNewName(event.target.value);
@@ -31,6 +66,7 @@ const App = () => {
   const filterHandler = (event) => {
     setFilter(event.target.value);
   };
+
   const verifyDupName = (arr, newItem) => {
     return arr.some(
       (item) => item.name.toUpperCase() === newItem.name.toUpperCase(),
@@ -39,19 +75,7 @@ const App = () => {
   const verifyDupNumber = (arr, newItem) => {
     return arr.some((item) => item.number === newItem.number);
   };
-  const addPerson = (event) => {
-    event.preventDefault();
-    const personToAdd = { name: newName, number: newNumber, id: nanoid() };
-    if (verifyDupName(persons, personToAdd)) {
-      alert(`${newName} is already added to phonebook`);
-    } else if (verifyDupNumber(persons, personToAdd)) {
-      alert(`${newNumber} is already added to phonebook`);
-    } else {
-      setPersons((prevPersons) => [...prevPersons, personToAdd]);
-      setNewName("");
-      setNewNumber("");
-    }
-  };
+
   const filteredPersons = persons.filter((person) =>
     person.name.toLowerCase().includes(filter.toLowerCase()),
   );
