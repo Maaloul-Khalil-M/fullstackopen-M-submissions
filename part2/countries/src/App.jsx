@@ -5,6 +5,9 @@ const baseUrl = "https://studies.cs.helsinki.fi/restcountries/api";
 
 const getAll = () => axios.get(`${baseUrl}/all`).then((res) => res.data);
 
+const getCountry = (name) =>
+  axios.get(`${baseUrl}/name/${name}`).then((res) => res.data);
+
 const CountryDetail = ({ country }) => {
   const languages = Object.values(country.languages);
   return (
@@ -23,45 +26,61 @@ const CountryDetail = ({ country }) => {
   );
 };
 
-const CountryList = ({ countries }) => {
+const CountryList = ({ countries, onShow }) => {
   return (
-    <ul>
+    <div>
       {countries.map((country) => (
-        <li key={country.name.common}>{country.name.common}</li>
+        <div key={country.name.common}>
+          {country.name.common}
+          <button onClick={() => onShow(country.name.common)}>show</button>
+        </div>
       ))}
-    </ul>
+    </div>
   );
 };
 
 const App = () => {
   const [countries, setCountries] = useState([]);
   const [query, setQuery] = useState("");
+  const [countryDetail, setCountryDetail] = useState(null);
 
   useEffect(() => {
     getAll().then(setCountries);
   }, []);
+
+  const handleShow = (name) => {
+    getCountry(name).then((data) => {
+      setCountryDetail(data);
+    });
+  };
 
   const result = countries.filter((country) =>
     country.name.common.toLowerCase().includes(query.toLowerCase()),
   );
 
   const renderResult = () => {
-    if (result.length > 10) {
+    if (countryDetail) {
+      return <CountryDetail country={countryDetail} />;
+    } else if (result.length > 10) {
       return <div>Too many matches, specify another filter</div>;
-    }
-    if (result.length > 1 && result.length <= 10) {
-      return <CountryList countries={result} />;
-    }
-    if (result.length === 1) {
+    } else if (result.length > 1) {
+      return <CountryList countries={result} onShow={handleShow} />;
+    } else if (result.length === 1) {
       return <CountryDetail country={result[0]} />;
     }
-    return <div>no countries found</div>;
+    return <div>No countries found</div>;
   };
 
   return (
     <div>
       <div>find countries</div>
-      <input value={query} onChange={(e) => setQuery(e.target.value)} />
+      <input
+        value={query}
+        onChange={(e) => {
+          setQuery(e.target.value);
+          setCountryDetail(null);
+        }}
+      />
       {renderResult()}
     </div>
   );
