@@ -1,5 +1,8 @@
 const express = require("express");
 const morgan = require("morgan");
+morgan.token("type", function (req, res) {
+  return req.headers["content-type"];
+});
 
 const app = express();
 
@@ -26,8 +29,11 @@ let persons = [
   },
 ];
 
-app.use(morgan("tiny"));
 app.use(express.json());
+
+morgan.token("body", (req) => JSON.stringify(req.body));
+
+app.use(morgan(":method :url :status :response-time[3]ms body=:body"));
 
 app.get("/api/persons", (request, response) => {
   response.json(persons);
