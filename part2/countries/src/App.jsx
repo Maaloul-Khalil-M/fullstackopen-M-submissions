@@ -1,43 +1,7 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
-
-const baseUrl = "https://studies.cs.helsinki.fi/restcountries/api";
-
-const getAll = () => axios.get(`${baseUrl}/all`).then((res) => res.data);
-
-const getCountry = (name) =>
-  axios.get(`${baseUrl}/name/${name}`).then((res) => res.data);
-
-const CountryDetail = ({ country }) => {
-  const languages = Object.values(country.languages);
-  return (
-    <div>
-      <h2>{country.name.common}</h2>
-      <div>Capital: {country.capital[0]}</div>
-      <div>Area: {country.area}</div>
-      <h3>Languages</h3>
-      <ul>
-        {languages.map((lang) => (
-          <li key={lang}>{lang}</li>
-        ))}
-      </ul>
-      <img src={country.flags.png} alt={country.flags.alt} width={180} />
-    </div>
-  );
-};
-
-const CountryList = ({ countries, onShow }) => {
-  return (
-    <div>
-      {countries.map((country) => (
-        <div key={country.name.common}>
-          {country.name.common}
-          <button onClick={() => onShow(country.name.common)}>show</button>
-        </div>
-      ))}
-    </div>
-  );
-};
+import fetchLogic from "./services/fetchLogic";
+import CountryDetail from "./components/CountryDetail";
+import CountryList from "./components/CountryList";
 
 const App = () => {
   const [countries, setCountries] = useState([]);
@@ -45,20 +9,19 @@ const App = () => {
   const [countryDetail, setCountryDetail] = useState(null);
 
   useEffect(() => {
-    getAll().then(setCountries);
+    fetchLogic.getAll().then(setCountries);
   }, []);
 
   const handleShow = (name) => {
-    getCountry(name).then((data) => {
+    fetchLogic.getCountry(name).then((data) => {
       setCountryDetail(data);
     });
   };
 
-  const result = countries.filter((country) =>
-    country.name.common.toLowerCase().includes(query.toLowerCase()),
-  );
-
   const renderResult = () => {
+    const result = countries.filter((country) =>
+      country.name.common.toLowerCase().includes(query.toLowerCase()),
+    );
     if (countryDetail) {
       return <CountryDetail country={countryDetail} />;
     } else if (result.length > 10) {
