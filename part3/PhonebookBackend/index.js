@@ -34,9 +34,19 @@ app.get("/info", (request, response) => {
   const personsCount = persons.filter(
     (curr) => typeof curr === "object",
   ).length;
-
-  const info = `<div>Phonebook has info for ${personsCount} <br> ${new Date()}</div>`;
+  const info = `<div>Phonebook has info for ${personsCount} people <br> ${new Date()}</div>`;
   response.send(info);
+});
+
+app.get("/api/persons/:id", (request, response) => {
+  const id = request.params.id;
+  const note = persons.find((note) => note.id === id);
+  if (note) {
+    response.json(note);
+  } else {
+    response.statusMessage = "No person found";
+    response.status(404).end();
+  }
 });
 
 const PORT = 3001;
