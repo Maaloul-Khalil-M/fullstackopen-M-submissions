@@ -1,0 +1,5 @@
+node_modules/
+
+# 'dist' is needed for render.com
+# because it contains the compiled frontend 
+# that the backend will serve.
