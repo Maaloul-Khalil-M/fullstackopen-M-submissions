@@ -6,6 +6,10 @@ morgan.token("type", function (req, res) {
 
 const app = express();
 
+// allow cors
+const cors = require("cors");
+app.use(cors());
+
 let persons = [
   {
     id: "1",
@@ -58,6 +62,8 @@ app.get("/api/persons/:id", (request, response) => {
   }
 });
 
+//logic error in filter: "82" !== 82 : true
+//we need to specify: id is string
 app.delete("/api/persons/:id", (request, response) => {
   const id = request.params.id;
   persons = persons.filter((p) => p.id !== id);
@@ -93,7 +99,7 @@ app.post("/api/persons", (request, response) => {
   }
 
   const person = {
-    id: generateId(),
+    id: String(generateId()),
     name: body.name,
     number: body.number,
   };
@@ -104,7 +110,7 @@ app.post("/api/persons", (request, response) => {
   response.status(201).json(person);
 });
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
