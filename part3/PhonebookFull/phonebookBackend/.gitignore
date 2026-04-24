@@ -1,5 +1,6 @@
 node_modules/
+.env
 
 # 'dist' is needed for render.com
-# because it contains the compiled frontend 
+# because it contains the compiled frontend
 # that the backend will serve.
