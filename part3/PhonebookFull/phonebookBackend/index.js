@@ -74,16 +74,7 @@ app.get("/api/persons/:id", (request, response) => {
   });
 });
 
-const generateId = () => {
-  const getRandomInt = (min, max) => {
-    const minCeiled = Math.ceil(min);
-    const maxFloored = Math.floor(max);
-    return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled);
-  };
-  const minId = Math.min(...persons.map((p) => p.id));
-  return getRandomInt(minId + 1, minId + 100);
-};
-
+// save new person to db
 app.post("/api/persons", (request, response) => {
   const body = request.body;
 
@@ -93,25 +84,14 @@ app.post("/api/persons", (request, response) => {
     });
   }
 
-  const existingPerson = persons.find((p) => p.name === body.name);
-
-  if (existingPerson) {
-    // 409 Conflict
-    return response.status(409).json({
-      error: "name must be unique",
-    });
-  }
-
-  const person = {
-    id: String(generateId()),
+  const person = new Person({
     name: body.name,
     number: body.number,
-  };
+  });
 
-  persons = persons.concat(person);
-
-  //201 Created
-  response.status(201).json(person);
+  person.save().then((savedPerson) => {
+    response.status(201).json(savedPerson);
+  });
 });
 
 // delete person by id
