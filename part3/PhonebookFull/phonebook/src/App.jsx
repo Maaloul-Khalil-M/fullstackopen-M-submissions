@@ -123,20 +123,40 @@ const App = () => {
 
   // passing state and logic to child
   return (
-    <div>
-      <h2>Phonebook</h2>
-      <Notification feedback={feedback} />
-      <Filter value={filter} onChange={filterHandler} />
-      <h2>add a new</h2>
-      <PersonForm
-        addPerson={addPerson}
-        newName={newName}
-        nameHandler={nameHandler}
-        newNumber={newNumber}
-        numberHandler={numberHandler}
-      />
-      <h2>Numbers</h2>
-      <Persons persons={filteredPersons} deletePerson={deletePerson} />
+    <div className="page-wrapper grid-animated-container">
+      <div className="grid-background">
+        <main>
+          <div className="unit">
+            <h2>Phonebook</h2>
+            <Notification feedback={feedback} />
+            <Filter value={filter} onChange={filterHandler} />
+            <h2>add a new</h2>
+            <PersonForm
+              addPerson={addPerson}
+              newName={newName}
+              nameHandler={nameHandler}
+              newNumber={newNumber}
+              numberHandler={numberHandler}
+            />
+          </div>
+          <div className="unit">
+            <h2>Numbers</h2>
+            <Persons persons={filteredPersons} deletePerson={deletePerson} />
+          </div>
+        </main>
+      </div>
+      <footer className="app-footer">
+        <p>
+          Now including{" "}
+          <a
+            href="https://www.mongodb.com/products/platform/atlas-database"
+            className="link"
+            target="_blank"
+          >
+            a database
+          </a>
+        </p>
+      </footer>
     </div>
   );
 };

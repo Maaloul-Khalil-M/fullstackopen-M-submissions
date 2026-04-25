@@ -7,15 +7,17 @@ export const PersonsForm = ({
 }) => {
   return (
     <form onSubmit={addPerson}>
-      <div>
-        name: <input value={newName} onChange={nameHandler} />
+      <div className="form-row">
+        <p>name</p> <input value={newName} onChange={nameHandler} />
       </div>
-      <div>
-        number:
+      <div className="form-row">
+        <p>number</p>
         <input type="tel" value={newNumber} onChange={numberHandler} />
       </div>
       <div>
-        <button type="submit">add</button>
+        <button type="submit" className="btn-add">
+          add
+        </button>
       </div>
     </form>
   );
