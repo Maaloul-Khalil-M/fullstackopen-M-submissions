@@ -15,28 +15,7 @@ const app = express();
 
 app.use(express.static("dist"));
 
-// let persons = [
-//   {
-//     id: "1",
-//     name: "Arto Hellas",
-//     number: "040-123456",
-//   },
-//   {
-//     id: "2",
-//     name: "Ada Lovelace",
-//     number: "39-44-5323523",
-//   },
-//   {
-//     id: "3",
-//     name: "Dan Abramov",
-//     number: "12-43-234345",
-//   },
-//   {
-//     id: "4",
-//     name: "Mary Poppendieck",
-//     number: "39-23-6423122",
-//   },
-// ];
+// let persons = [{...}]
 
 app.use(express.json());
 
@@ -45,36 +24,49 @@ morgan.token("body", (req) => JSON.stringify(req.body));
 app.use(morgan(":method :url :status :response-time[3]ms body=:body"));
 
 // find all persons (now with mongodb)
+// Model.find()
 app.get("/api/persons", (request, response) => {
-  // response.json(persons);
   Person.find({}).then((persons) => {
     response.json(persons);
   });
 });
 
 // count all persons
+// Model.countDocuments()
 app.get("/info", (request, response) => {
-  Person.find({}).then((persons) => {
-    const personsCount = persons.filter(
-      (curr) => typeof curr === "object",
-    ).length;
-    const info = `<div>Phonebook has info for ${personsCount} people <br> ${new Date()}</div>`;
-    response.send(info);
-  });
+  Person.countDocuments({})
+    .then((personsCount) => {
+      const info = `
+        <div>
+          Phonebook has info for ${personsCount} people <br>
+          ${new Date()}
+        </div>
+      `;
+      response.send(info);
+    })
+    .catch((error) => {
+      response.status(500).send({ error: "Failed to fetch info" });
+    });
 });
 
 // get person by id
-app.get("/api/persons/:id", (request, response) => {
-  Person.findById(request.params.id).then((person) => {
-    if (person) {
-      response.json(person);
-    } else {
-      response.status(404).send("No person found");
-    }
-  });
+// Model.findById()
+app.get("/api/notes/:id", (request, response) => {
+  Note.findById(request.params.id)
+    .then((note) => {
+      if (!note) {
+        return response.status(404).json({ error: "note not found" });
+      }
+      response.json(note);
+    })
+    .catch((error) => {
+      console.error(error);
+      response.status(400).json({ error: "malformatted id" });
+    });
 });
 
 // save new person to db
+// Model.save()
 app.post("/api/persons", (request, response) => {
   const body = request.body;
 
@@ -95,12 +87,21 @@ app.post("/api/persons", (request, response) => {
 });
 
 // delete person by id
+// Model.findByIdAndDelete()
 app.delete("/api/persons/:id", (request, response) => {
-  const id = request.params.id;
-  persons = persons.filter((p) => p.id !== id);
-  response.status(204).end();
+  Person.findByIdAndDelete(request.params.id)
+    .then(() => {
+      response.status(204).end();
+    })
+    .catch((error) => {
+      console.error(error);
+      response.status(400).json({ error: "malformatted id" });
+    });
 });
 
+// app.put
+//front axios.put(`${baseUrl}/${id}`, newObject)
+// findById return save
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
