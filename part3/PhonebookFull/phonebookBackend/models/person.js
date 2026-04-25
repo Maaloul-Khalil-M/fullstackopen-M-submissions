@@ -15,10 +15,17 @@ mongoose
     console.log("error connecting to MongoDB:", error.message);
   });
 
-// create schema and model
+// create schema and model with validation
 const personSchema = new mongoose.Schema({
-  name: String,
-  number: String,
+  name: {
+    type: String,
+    minLength: [3, "Name must be at least 3 characters long"],
+    required: [true, "Name is required"],
+  },
+  number: {
+    type: String,
+    // required: [true, 'Phone number is required'],
+  },
 });
 
 personSchema.set("toJSON", {

@@ -68,15 +68,25 @@ const App = () => {
       handleDuplicateConfirmation(duplicatedPerson, personToAdd);
       return;
     }
-    fetchLogic.create(personToAdd).then((returnedPerson) => {
-      setPersons((prevPersons) => [...prevPersons, returnedPerson]);
-      setFeedback((prevFeed) => ({
-        msg: `${newName} was successfully added`,
-        isError: false,
-      }));
-      setNewName("");
-      setNewNumber("");
-    });
+    // add mongoose validation error
+    fetchLogic
+      .create(personToAdd)
+      .then((returnedPerson) => {
+        setPersons((prevPersons) => [...prevPersons, returnedPerson]);
+        setFeedback((prevFeed) => ({
+          msg: `${newName} was successfully added!!!`,
+          isError: false,
+        }));
+        setNewName("");
+        setNewNumber("");
+      })
+      .catch((error) => {
+        console.log(error.response.data.error);
+        setFeedback((prevFeed) => ({
+          msg: `mongoose: ${error.response.data.error}`,
+          isError: true,
+        }));
+      });
   };
 
   //delete logic
