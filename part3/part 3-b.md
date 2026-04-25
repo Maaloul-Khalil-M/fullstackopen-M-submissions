@@ -25,7 +25,10 @@ const baseUrl = "http://localhost:3001/persons";
 
 When we change `baseUrl` to call the backend we get [**CORS error**](https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Same-origin_policy)
 this happen because the front and back have different PORT therefore different origin
+
+<p align="center">
 <image src="./assets/corc err.png" width="300px"/>
+</p>
 
 To allow CORS we add `cors` middleware to the backend:
 
@@ -35,7 +38,10 @@ const cors = require("cors");
 app.use(cors());
 ```
 
+<p align="center">
 <image src="./assets/corc allow.png" width="300px"/>
+</p>
+
 => front and back are now running on two separate ports, talking to each other correctly.
 (GET + DELETE ok, PUT isn't defined yet in the back therefore 400)
 
@@ -89,7 +95,11 @@ const baseUrl = "/api/persons";
 therefore we need to define a [PROXY](https://fullstackopen.com/en/part3/deploying_app_to_internet#proxy)
 
 **testing it locally is successful**
+
+<p align="center">
 <image src="./assets/localprove.png" width="800px"/>
+</p>
+
 => to avoid repeating this process everytime we update react DEV build, add this script
 
 ```json
@@ -134,11 +144,31 @@ we add this scirpt to automate and push changes
 [Render](https://render.com/) is a **Platform as a Service (PaaS)** that lets developers deploy backend in friendly way
 It is convenient for small projects/api like our, sadly not for production-grade or always-on applications
 
-The free tier works fine for this project but has real constraints: - **Server sleeps after 15 minutes of inactivity.** The next request will hang for 30–60 seconds while it wakes back up. Just wait it out. - **Weak hardware:** 0.1 CPU and 512 MB RAM — fine for a phonebook. - **No persistent disk.** The in-memory `persons[]` resets every time the server restarts or redeploys. For now this is acceptable — eventually you'd replace it with a database. - **No SSH access** — you can't shell into the running instance to debug. - **Delayed logs** — no live log streaming; you query logs by time range. - **Single instance only** — no scaling, no background workers, no scheduled jobs.
+The free tier works fine for this project but has real constraints:
 
-inside render we will create a **web-service** and choose `./part3/PhonebookFull/phonebookBackend` as repo root
-we should now be able to check if the deploy was successful
-<image src="./assets/renderdep.png" width="600px"/>
-and be able to send some request
-<image src="./assets/hosting1.png" width="600px"/><image src="./assets/hosting2.png" width="600px"/>
-and it was deployed [here](https://fullstackopen-m-submissions.onrender.com/)
+- **Server sleeps after 15 minutes of inactivity:** The next request will hang for 30–60 seconds while it wakes back up. Just wait it out.
+- **Weak hardware:** 0.1 CPU and 512 MB RAM — fine for a phonebook.
+- **No persistent disk:** The in-memory `persons[]` resets every time the server restarts or redeploys. For now, this is acceptable — eventually, you'd replace it with a database.
+- **No SSH access:** You can't shell into the running instance to debug.
+- **Delayed logs:** No live log streaming; you query logs by time range.
+- **Single instance only:** No scaling, no background workers, no scheduled jobs.
+
+### Deployment Steps
+
+Inside Render, we will create a **Web Service** and choose `./part3/PhonebookFull/phonebookBackend` as the repo root.
+
+We should now be able to check if the deploy was successful:
+
+<p align="center">
+<image src="./assets/renderdep.png" width="800px"/>
+</p>
+
+And be able to send some requests:
+
+<p align="center">
+<image src="./assets/hosting1.png" width="800px"/>
+</p>
+
+<p align="center">
+<image src="./assets/hosting2.png" width="800px"/>
+</p>
