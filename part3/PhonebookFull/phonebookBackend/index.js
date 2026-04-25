@@ -107,9 +107,27 @@ app.delete("/api/persons/:id", (request, response, next) => {
     .catch((error) => next(error));
 });
 
-// app.put
-//front axios.put(`${baseUrl}/${id}`, newObject)
-// findById return save
+// update person
+// findById then apply
+// findByIdAndUpdate bypass validation (.save() not required)
+app.put("/api/persons/:id", (request, response, next) => {
+  const body = request.body;
+  Person.findById(request.params.id)
+    .then((person) => {
+      if (!person) {
+        return response.status(404).end();
+      }
+      person.name = body.name;
+      person.number = body.number;
+      return person.save();
+    })
+    .then((updatedPerson) => {
+      response.json(updatedPerson);
+    })
+    .catch((error) => {
+      next(error);
+    });
+});
 
 // handler of requests with unknown endpoint
 app.use(unknownEndpoint);
