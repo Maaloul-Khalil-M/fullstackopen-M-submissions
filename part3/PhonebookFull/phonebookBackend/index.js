@@ -14,26 +14,38 @@ const app = express();
 // app.use(cors());
 
 app.use(express.static("dist"));
-
-// let persons = [{...}]
-
 app.use(express.json());
 
-morgan.token("body", (req) => JSON.stringify(req.body));
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message);
+  if (error.name === "CastError") {
+    return response.status(400).send({ error: "malformatted id" });
+  } else if (error.name === "ValidationError") {
+    return response.status(400).json({ error: error.message });
+  }
+  next(error);
+};
 
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: "unknown endpoint" });
+};
+
+morgan.token("body", (req) => JSON.stringify(req.body));
 app.use(morgan(":method :url :status :response-time[3]ms body=:body"));
 
 // find all persons (now with mongodb)
 // Model.find()
-app.get("/api/persons", (request, response) => {
-  Person.find({}).then((persons) => {
-    response.json(persons);
-  });
+app.get("/api/persons", (request, response, next) => {
+  Person.find({})
+    .then((persons) => {
+      response.json(persons);
+    })
+    .catch((error) => next(error));
 });
 
 // count all persons
 // Model.countDocuments()
-app.get("/info", (request, response) => {
+app.get("/info", (request, response, next) => {
   Person.countDocuments({})
     .then((personsCount) => {
       const info = `
@@ -44,30 +56,26 @@ app.get("/info", (request, response) => {
       `;
       response.send(info);
     })
-    .catch((error) => {
-      response.status(500).send({ error: "Failed to fetch info" });
-    });
+    .catch((error) => next(error));
 });
 
 // get person by id
 // Model.findById()
-app.get("/api/notes/:id", (request, response) => {
-  Note.findById(request.params.id)
-    .then((note) => {
-      if (!note) {
-        return response.status(404).json({ error: "note not found" });
+app.get("/api/persons/:id", (request, response, next) => {
+  Person.findById(request.params.id)
+    .then((person) => {
+      if (person) {
+        response.json(person);
+      } else {
+        response.status(404).json({ error: "note not found" });
       }
-      response.json(note);
     })
-    .catch((error) => {
-      console.error(error);
-      response.status(400).json({ error: "malformatted id" });
-    });
+    .catch((error) => next(error));
 });
 
 // save new person to db
 // Model.save()
-app.post("/api/persons", (request, response) => {
+app.post("/api/persons", (request, response, next) => {
   const body = request.body;
 
   if (!body.name || !body.number) {
@@ -81,27 +89,34 @@ app.post("/api/persons", (request, response) => {
     number: body.number,
   });
 
-  person.save().then((savedPerson) => {
-    response.status(201).json(savedPerson);
-  });
+  person
+    .save()
+    .then((savedPerson) => {
+      response.status(201).json(savedPerson);
+    })
+    .catch((error) => next(error));
 });
 
 // delete person by id
 // Model.findByIdAndDelete()
-app.delete("/api/persons/:id", (request, response) => {
+app.delete("/api/persons/:id", (request, response, next) => {
   Person.findByIdAndDelete(request.params.id)
     .then(() => {
       response.status(204).end();
     })
-    .catch((error) => {
-      console.error(error);
-      response.status(400).json({ error: "malformatted id" });
-    });
+    .catch((error) => next(error));
 });
 
 // app.put
 //front axios.put(`${baseUrl}/${id}`, newObject)
 // findById return save
+
+// handler of requests with unknown endpoint
+app.use(unknownEndpoint);
+
+//last loaded middleware
+app.use(errorHandler);
+
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
