@@ -1,5 +1,5 @@
 // npm test -- .\tests\blog_api.test.js
-
+// node --test --test-only ./tests/blog_api.test.js
 const assert = require("node:assert");
 const { test, after, beforeEach } = require("node:test");
 const mongoose = require("mongoose");
@@ -25,6 +25,13 @@ test("blogs are returned as json", async () => {
 test("all blogs are returned", async () => {
   const response = await api.get("/api/blogs");
   assert.strictEqual(response.body.length, helper.initialBlogs.length);
+});
+
+test.only("unique id prop of blog is named id", async () => {
+  const blogs = await helper.blogsInDb();
+  blogs.forEach((blog) => {
+    assert.strictEqual(typeof blog.id, "string");
+  });
 });
 
 after(async () => {
