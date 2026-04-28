@@ -1,7 +1,7 @@
 // npm test -- .\tests\blog_api.test.js
 // npm run test:only -- ./tests/blog_api.test.js
 const assert = require("node:assert");
-const { test, after, beforeEach } = require("node:test");
+const { test, after, beforeEach, describe } = require("node:test");
 const mongoose = require("mongoose");
 const supertest = require("supertest");
 const app = require("../app");
@@ -74,7 +74,7 @@ test("a blog with missing likes will default to 0", async () => {
   assert.strictEqual(addedBlog.likes, 0); //we need to modify schema
 });
 
-test.only("an invalid blog can't be added", async () => {
+test("an invalid blog can't be added", async () => {
   const invalidBlog = {
     title: "no url",
   };
@@ -82,6 +82,21 @@ test.only("an invalid blog can't be added", async () => {
   await api.post("/api/blogs").send(invalidBlog).expect(400);
   const blogsAtEnd = await helper.blogsInDb();
   assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length);
+});
+
+describe("delete a blog", () => {
+  test.only("succeeds with status code 204 if id is valid", async () => {
+    const blogsAtStart = await helper.blogsInDb();
+    const blogToDelete = blogsAtStart[0];
+
+    //need to define route
+    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+
+    const blogsAtEnd = await helper.blogsInDb();
+    assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1);
+    const titles = blogsAtEnd.map((b) => b.title);
+    assert(!titles.includes(blogToDelete.title));
+  });
 });
 
 after(async () => {
