@@ -56,7 +56,7 @@ test("a valid blog can be added ", async () => {
   assert(titles.includes("new blog"));
 });
 
-test.only("a blog with missing likes will default to 0", async () => {
+test("a blog with missing likes will default to 0", async () => {
   const newBlog = {
     title: "no likes",
     author: "marj",
@@ -72,6 +72,16 @@ test.only("a blog with missing likes will default to 0", async () => {
   const blogsAtEnd = await helper.blogsInDb();
   const addedBlog = blogsAtEnd.find((b) => b.title === "no likes");
   assert.strictEqual(addedBlog.likes, 0); //we need to modify schema
+});
+
+test.only("an invalid blog can't be added", async () => {
+  const invalidBlog = {
+    title: "no url",
+  };
+  // schema: make title and url required
+  await api.post("/api/blogs").send(invalidBlog).expect(400);
+  const blogsAtEnd = await helper.blogsInDb();
+  assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length);
 });
 
 after(async () => {
