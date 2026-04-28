@@ -14,6 +14,7 @@ beforeEach(async () => {
   await Blog.deleteMany({});
   await Blog.insertMany(helper.initialBlogs);
 });
+// test.only("", async () => {});
 
 test("blogs are returned as json", async () => {
   await api
@@ -34,7 +35,7 @@ test("unique id prop of blog is named id", async () => {
   });
 });
 
-test.only("a valid blog can be added ", async () => {
+test("a valid blog can be added ", async () => {
   const newBlog = {
     title: "new blog",
     author: "marj N",
@@ -53,6 +54,24 @@ test.only("a valid blog can be added ", async () => {
 
   const titles = blogsAtEnd.map((n) => n.title);
   assert(titles.includes("new blog"));
+});
+
+test.only("a blog with missing likes will default to 0", async () => {
+  const newBlog = {
+    title: "no likes",
+    author: "marj",
+    url: "http://example.com/9",
+  };
+
+  await api
+    .post("/api/blogs")
+    .send(newBlog)
+    .expect(201)
+    .expect("Content-Type", /application\/json/);
+
+  const blogsAtEnd = await helper.blogsInDb();
+  const addedBlog = blogsAtEnd.find((b) => b.title === "no likes");
+  assert.strictEqual(addedBlog.likes, 0); //we need to modify schema
 });
 
 after(async () => {
