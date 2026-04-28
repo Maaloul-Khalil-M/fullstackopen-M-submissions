@@ -1,5 +1,5 @@
 // npm test -- .\tests\blog_api.test.js
-// node --test --test-only ./tests/blog_api.test.js
+// npm run test:only -- ./tests/blog_api.test.js
 const assert = require("node:assert");
 const { test, after, beforeEach } = require("node:test");
 const mongoose = require("mongoose");
@@ -27,11 +27,32 @@ test("all blogs are returned", async () => {
   assert.strictEqual(response.body.length, helper.initialBlogs.length);
 });
 
-test.only("unique id prop of blog is named id", async () => {
+test("unique id prop of blog is named id", async () => {
   const blogs = await helper.blogsInDb();
   blogs.forEach((blog) => {
     assert.strictEqual(typeof blog.id, "string");
   });
+});
+
+test.only("a valid blog can be added ", async () => {
+  const newBlog = {
+    title: "new blog",
+    author: "marj N",
+    url: "http://example.com/99",
+    likes: 99,
+  };
+
+  await api
+    .post("/api/blogs")
+    .send(newBlog)
+    .expect(201)
+    .expect("Content-Type", /application\/json/);
+
+  const blogsAtEnd = await helper.blogsInDb();
+  assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1);
+
+  const titles = blogsAtEnd.map((n) => n.title);
+  assert(titles.includes("new blog"));
 });
 
 after(async () => {
