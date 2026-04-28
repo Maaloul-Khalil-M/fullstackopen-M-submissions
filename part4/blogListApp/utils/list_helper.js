@@ -18,13 +18,6 @@ const favoriteBlog = (blogs) => {
 const mostBlogs = (blogs) => {
   if (blogs.length === 0) return null;
 
-  // return _.chain(blogs)
-  //   .countBy("author") //hard to call aggregate functions like sumBy
-  //   .toPairs() //needed to create iterable
-  //   .map(([author, blogs]) => ({ author, blogs }))
-  //   .maxBy("blogs")
-  //   .value();
-
   return _.chain(blogs)
     .groupBy("author") // {author, blogs[]}
     .map((blogs, author) => ({

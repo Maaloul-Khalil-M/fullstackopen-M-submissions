@@ -44,13 +44,17 @@ function sendToGrafana(level, message) {
 }
 
 const info = (...params) => {
-  console.log(...params);
-  sendToGrafana("INFO", params.join(" "));
+  if (process.env.NODE_ENV !== "test") {
+    console.log(...params);
+    sendToGrafana("INFO", params.join(" "));
+  }
 };
 
 const error = (...params) => {
-  console.error(...params);
-  sendToGrafana("ERROR", params.join(" "));
+  if (process.env.NODE_ENV !== "test") {
+    console.error(...params);
+    sendToGrafana("ERROR", params.join(" "));
+  }
 };
 
 module.exports = { info, error };
