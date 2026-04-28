@@ -74,3 +74,21 @@ describe("total likes", () => {
     assert.strictEqual(listHelper.totalLikes(blogs), expected);
   });
 });
+
+describe("favorite blog", () => {
+  test("of empty list is null", () => {
+    assert.strictEqual(listHelper.favoriteBlog([]), null);
+  });
+
+  test("when list has only one blog returns said blog", () => {
+    const blog = blogs[0];
+    const result = listHelper.favoriteBlog([blog]);
+    assert.deepStrictEqual(result, blog);
+  });
+
+  test("of a bigger list is returned right", () => {
+    const result = listHelper.favoriteBlog(blogs);
+    const expected = blogs[2];
+    assert.deepStrictEqual(result, expected);
+  });
+});
