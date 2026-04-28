@@ -86,9 +86,28 @@ describe("favorite blog", () => {
     assert.deepStrictEqual(result, blog);
   });
 
-  test("of a bigger list is returned right", () => {
+  test("of a bigger list returns the correct blog with most likes", () => {
     const result = listHelper.favoriteBlog(blogs);
     const expected = blogs[2];
+    assert.deepStrictEqual(result, expected);
+  });
+});
+
+describe("author with most blogs", () => {
+  test("of empty list is null", () => {
+    assert.strictEqual(listHelper.mostBlogs([]), null);
+  });
+
+  test("when list has only one blog returns said blog author", () => {
+    const blog = blogs[0];
+    const result = listHelper.mostBlogs([blog]);
+    const expected = { author: blog.author, blogs: 1 };
+    assert.deepStrictEqual(result, expected);
+  });
+
+  test("of a bigger list returns the correct author with most blog", () => {
+    const result = listHelper.mostBlogs(blogs);
+    const expected = { author: "Robert C. Martin", blogs: 3 };
     assert.deepStrictEqual(result, expected);
   });
 });
