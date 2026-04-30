@@ -9,6 +9,12 @@ const userSchema = mongoose.Schema({
   },
   name: String,
   passwordHash: String, //define constraint in controller
+  blogs: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Blog",
+    },
+  ],
 });
 
 userSchema.set("toJSON", {
