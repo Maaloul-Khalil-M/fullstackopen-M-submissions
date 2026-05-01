@@ -16,12 +16,20 @@ const initialBlogs = [
   },
 ];
 
+//add userId at correct place
+const getInitialBlogs = async () => {
+  const user = await User.findOne({ username: "root" });
+  return initialBlogs.map((blogs) => ({ ...blogs, user: user._id }));
+};
+
 const nonExistingId = async () => {
+  const user = await User.findOne({ username: "root" });
   const blog = new Blog({
     title: "todelete",
     author: "todelete",
     url: "http://todelete.tn",
     likes: 0,
+    user: user._id,
   });
   await blog.save();
   await blog.deleteOne();
@@ -40,6 +48,7 @@ const usersInDb = async () => {
 
 module.exports = {
   initialBlogs,
+  getInitialBlogs,
   nonExistingId,
   blogsInDb,
   usersInDb,
